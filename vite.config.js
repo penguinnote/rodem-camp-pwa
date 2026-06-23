@@ -20,7 +20,7 @@ export default defineConfig({
         short_name: "말씀캠프",
         description: "2026 청년대학부 여름말씀캠프 · 일정 · 방배정 · 말씀구절 · 공지",
         lang: "ko",
-        theme_color: "#496b3f",
+        theme_color: "#3F7D99",
         background_color: "#ffffff",
         display: "standalone",
         orientation: "portrait",

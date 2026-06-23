@@ -1,12 +1,12 @@
-@import url("https://cdn.jsdelivr.net/gh/spoqa/spoqa-han-sans@latest/css/SpoqaHanSansNeo.css");
+@import url("https://fonts.googleapis.com/css2?family=Gowun+Batang:wght@400;700&display=swap");
 
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 :root {
-  font-family: "Spoqa Han Sans Neo", "Apple SD Gothic Neo", -apple-system,
-    BlinkMacSystemFont, system-ui, sans-serif;
+  font-family: "Gowun Batang", "Apple SD Gothic Neo", -apple-system,
+    BlinkMacSystemFont, system-ui, serif;
   -webkit-font-smoothing: antialiased;
   text-rendering: optimizeLegibility;
   word-break: keep-all; /* 한글 단어 단위 줄바꿈 */
@@ -20,8 +20,8 @@ body,
 
 body {
   margin: 0;
-  background: #f4f7f2; /* basil-50 — 앱 바깥 여백 */
-  color: #1c211b;
+  background: #f2f8fa; /* basil-50 — 앱 바깥 여백 */
+  color: #21343c;
   -webkit-tap-highlight-color: transparent;
 }
 

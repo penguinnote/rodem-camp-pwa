@@ -56,7 +56,7 @@ export default function AnnouncementDetail() {
           </p>
         ) : (
           <article>
-            <h1 className="break-keep text-2xl font-bold leading-snug text-ink">
+            <h1 className="break-keep text-2xl font-bold leading-snug text-title">
               {notice.title}
             </h1>
             <p className="mt-2 text-[13px] text-ink-faint">

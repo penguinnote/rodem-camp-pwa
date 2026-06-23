@@ -45,34 +45,55 @@ export default function Home() {
 
   return (
     <div>
-      {/* 히어로 (eyebrow + 제목) */}
-      <section className="px-6 pb-6 pt-[max(3rem,calc(env(safe-area-inset-top)+2rem))]">
-        <p className="text-[12px] font-semibold uppercase tracking-[0.2em] text-basil-500">
+      {/* 히어로 — 수채화 하늘빛 그라데이션 (안전영역까지 채움) */}
+      <section
+        className="relative overflow-hidden px-6 pb-8 pt-[max(3.5rem,calc(env(safe-area-inset-top)+2.25rem))]"
+        style={{
+          background: [
+            "radial-gradient(130px 95px at 16% 20%, rgba(255,250,220,.95), transparent 70%)",
+            "radial-gradient(160px 130px at 84% 10%, rgba(150,222,236,.92), transparent 70%)",
+            "radial-gradient(170px 140px at 68% 74%, rgba(120,206,228,.8), transparent 72%)",
+            "radial-gradient(150px 120px at 18% 90%, rgba(178,234,212,.85), transparent 70%)",
+            "radial-gradient(210px 170px at 45% 45%, rgba(220,245,245,.7), transparent 75%)",
+            "linear-gradient(165deg,#d3f0f3,#e0f2ec 52%,#f6f1e3)",
+          ].join(", "),
+        }}
+      >
+        {/* ✦ 반짝임 (흰색) */}
+        <Sparkle className="left-7 top-[16%]" size={9} color="#FFFFFF" />
+        <Sparkle className="right-8 top-[24%]" size={13} color="#FFFFFF" />
+        <Sparkle className="right-14 top-[60%]" size={7} color="#FFFFFF" />
+        <Sparkle className="bottom-[18%] left-[24%]" size={11} color="#FFFFFF" />
+
+        <p className="relative text-[11px] font-semibold uppercase tracking-[0.22em] text-basil-600">
           2026 청년대학부 여름말씀캠프
         </p>
 
         <h1
-          className="mt-4 font-bold leading-[1.3] tracking-tight text-ink"
+          className="relative mt-4 leading-[1.3] tracking-tight text-title"
           style={{
             whiteSpace: "nowrap",
-            fontSize: "clamp(1.1rem, 5.5vw, 1.4rem)",
+            fontWeight: 400,
+            fontSize: "clamp(1.4rem, 6.5vw, 1.65rem)",
           }}
         >
           아담아, 네가 어디 있느냐?
         </h1>
+
+        <p className="relative mt-2 text-[22px] font-bold italic text-title">
+          Where are you?
+        </p>
       </section>
 
-      {/* 구분선 (좌우 본문 패딩 20px 안쪽 · 배경 흰색 유지) */}
-      <div className="mx-5 h-[1.5px] bg-basil-300" />
-
       {/* 주제 말씀 */}
-      <section className="px-6 pb-9 pt-6">
-        <blockquote className="rounded-2xl border border-basil-100 bg-basil-50/60 p-5">
+      <section className="px-6 pb-9 pt-7">
+        <blockquote className="rounded-2xl border border-[#D4E6EC] bg-basil-50 p-5">
           <p className="break-keep text-[15px] leading-relaxed text-ink">
-            “여호와 하나님이 아담을 부르시며 그에게 이르시되 네가 어디
-            있느냐?”
+            여호와 하나님이 아담을 부르시며 이르시되
+            <br />
+            네가 어디 있느냐?
           </p>
-          <footer className="mt-2 text-sm font-semibold text-basil-600">
+          <footer className="mt-2 text-sm font-bold text-basil-600">
             창세기 3:9
           </footer>
         </blockquote>
@@ -110,12 +131,12 @@ export default function Home() {
                     ) : (
                       <span />
                     )}
-                    <span className="shrink-0 text-[11px] text-ink-faint">
+                    <span className="shrink-0 text-[11px] text-basil-400">
                       {formatRelative(notice.createdAt)}
                     </span>
                   </div>
                   <h2
-                    className={`mt-3 break-keep font-bold leading-snug text-ink ${
+                    className={`mt-3 break-keep font-bold leading-snug text-title ${
                       i === 0 ? "text-2xl" : "text-lg"
                     }`}
                   >
@@ -187,5 +208,18 @@ function BellIcon() {
       <path d="M6 9a6 6 0 1 1 12 0c0 5 2 6 2 6H4s2-1 2-6" />
       <path d="M10 19a2 2 0 0 0 4 0" />
     </svg>
+  );
+}
+
+/* 히어로 위 ✦ 반짝임 (절대위치) */
+function Sparkle({ className = "", size = 10, color = "#E6CF94" }) {
+  return (
+    <span
+      className={`pointer-events-none absolute select-none ${className}`}
+      style={{ fontSize: size, color, lineHeight: 1 }}
+      aria-hidden="true"
+    >
+      ✦
+    </span>
   );
 }

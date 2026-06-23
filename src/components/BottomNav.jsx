@@ -12,7 +12,7 @@ const tabs = [
 
 export default function BottomNav() {
   return (
-    <nav className="fixed inset-x-0 bottom-0 z-20 mx-auto max-w-md border-t border-basil-100 bg-white/90 backdrop-blur-md">
+    <nav className="fixed inset-x-0 bottom-0 z-20 mx-auto max-w-md border-t border-[#D4E6EC] bg-white/90 backdrop-blur-md">
       <div className="grid grid-cols-5 pb-[env(safe-area-inset-bottom)]">
         {tabs.map(({ to, label, icon: Icon }) => (
           <NavLink
@@ -21,7 +21,7 @@ export default function BottomNav() {
             end={to === "/"}
             className={({ isActive }) =>
               `flex flex-col items-center gap-1 py-3 text-[11px] transition-colors ${
-                isActive ? "text-basil-600" : "text-ink-faint"
+                isActive ? "text-basil-600" : "text-[#9BB3BD]"
               }`
             }
           >
@@ -40,7 +40,7 @@ export default function BottomNav() {
         <button
           type="button"
           onClick={() => window.open(PHOTO_ALBUM_URL, "_blank")}
-          className="flex flex-col items-center gap-1 py-3 text-[11px] text-ink-faint transition-colors"
+          className="flex flex-col items-center gap-1 py-3 text-[11px] text-[#9BB3BD] transition-colors"
         >
           <PhotoIcon active={false} />
           <span className="font-medium">사진</span>

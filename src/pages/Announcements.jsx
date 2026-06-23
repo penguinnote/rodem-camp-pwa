@@ -35,7 +35,7 @@ export default function Announcements() {
                   className="block w-full rounded-2xl border border-basil-100 bg-white p-5 text-left"
                 >
                   <div className="flex items-start justify-between gap-3">
-                    <h2 className="break-keep text-base font-bold leading-snug text-ink">
+                    <h2 className="break-keep text-base font-bold leading-snug text-title">
                       {notice.title}
                     </h2>
                     <span className="shrink-0 text-[11px] text-ink-faint">
