@@ -50,13 +50,13 @@
 
 ```mermaid
 flowchart TD
-    A[관리자 /admin<br/>Firebase Auth 로그인] -->|공지 작성| B[(Firestore<br/>announcements)]
-    B -->|onCreate 트리거| C[Cloud Function<br/>sendAnnouncement]
-    D[(Firestore<br/>tokens)] -->|토큰 조회| C
-    C -->|FCM 일괄 발송| E[참가자 폰<br/>Service Worker]
-    E -->|백그라운드 알림| F[잠금화면 푸시]
-    B -.->|실시간 구독| G[홈 화면 공지 배너]
-    H[사용자] -->|알림 권한 허용| D
+    A["관리자 /admin<br/>Firebase Auth 로그인"] -->|"공지 작성"| B[("Firestore<br/>announcements")]
+    B -->|"onCreate 트리거"| C["Cloud Function<br/>sendAnnouncement"]
+    D[("Firestore<br/>tokens")] -->|"토큰 조회"| C
+    C -->|"FCM 일괄 발송"| E["참가자 폰<br/>Service Worker"]
+    E -->|"백그라운드 알림"| F["잠금화면 푸시"]
+    B -.->|"실시간 구독"| G["홈 화면 공지 배너"]
+    H["사용자"] -->|"알림 권한 허용"| D
 ```
 
 - **DB**: Firestore — `announcements`(공지), `tokens`(FCM 토큰)
