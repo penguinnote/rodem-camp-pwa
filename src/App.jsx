@@ -37,8 +37,8 @@ export default function App() {
       )}
 
       {/* 전체 높이 flex 컬럼: 본문만 내부 스크롤, 하단 탭은 항상 맨 아래 고정 */}
-      {/* iOS standalone PWA에서 100dvh가 실제 뷰포트보다 짧게 잡히는 문제로 height:100% 체인 사용 */}
-      <div className="mx-auto flex h-full max-w-md flex-col bg-white">
+      {/* 높이는 .app-shell에서 height:100% + min-height:100svh + -webkit-fill-available fallback 적용 */}
+      <div className="app-shell mx-auto flex max-w-md flex-col bg-white">
         {/* 콘텐츠 영역 (이 안에서만 스크롤) */}
         <main className="flex-1 overflow-y-auto">
           <Routes>

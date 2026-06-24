@@ -25,6 +25,20 @@ body,
   background-color: transparent;
 }
 
+/* 앱 셸 높이 — iOS standalone PWA에서 height:100%/100dvh가 실제 뷰포트보다
+   짧게 잡혀 하단 탭이 바닥에 안 붙는 문제를 fallback을 겹쳐 해결한다.
+   1) height:100% (체인 기본)  2) min-height:100svh (작은 뷰포트 단위)
+   3) -webkit-fill-available (구형 iOS Safari standalone) */
+.app-shell {
+  height: 100%;
+  min-height: 100svh;
+}
+@supports (min-height: -webkit-fill-available) {
+  .app-shell {
+    min-height: -webkit-fill-available;
+  }
+}
+
 body {
   margin: 0;
   color: #21343c;
