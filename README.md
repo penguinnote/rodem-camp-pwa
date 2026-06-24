@@ -42,6 +42,8 @@
 - **공지 실시간 반영** — Firestore 구독으로 앱을 열면 최신 공지가 홈 중앙에 표시
 - **공지 상세 및 목록** — 홈에서 최신 공지를 보여주고, 상세 페이지와 전체 목록 페이지로 모든 공지를 확인
 - **상대시간 표시** — 공지에 just now, N분 전 형식의 상대시간 표기
+- **스플래시 화면** — 앱 진입 시 아이콘에서 로딩 막대를 거쳐 홈으로 이어지는 진입 연출
+- **PWA 앱 아이콘** — 홈 화면 설치 시 브랜드 색을 반영한 전용 아이콘 표시
 - **QR 설치형 PWA** — 앱스토어 없이 홈 화면에 설치, 네이티브 앱 같은 경험
 - **오프라인 대응** — 서비스워커 캐싱으로 캠프장 네트워크가 불안정해도 조회 가능
 - **관리자 전용 페이지** — Firebase Auth 로그인 기반 공지 작성/발송
@@ -121,7 +123,7 @@ camp-app/
 ├─ src/
 │  ├─ pages/         # Home, Schedule, Rooms, Verses, Admin,
 │  │                 #   Announcements, AnnouncementDetail
-│  ├─ components/    # BottomNav, PageHeader
+│  ├─ components/    # BottomNav, PageHeader, SplashScreen
 │  ├─ data/          # 일정·방배정·말씀 (정적 데이터)
 │  ├─ lib/push.js    # 알림 권한 요청 + FCM 토큰 등록
 │  ├─ lib/time.js    # 상대시간 포맷 (just now, N분 전)
