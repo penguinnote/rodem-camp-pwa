@@ -65,16 +65,79 @@ export default function AnnouncementDetail() {
                 <span className="text-ink-faint"> · {formatExact(notice.createdAt)}</span>
               )}
             </p>
-            {notice.body && (
-              <p className="mt-5 whitespace-pre-wrap break-keep text-[15px] leading-relaxed text-ink">
-                {notice.body}
-              </p>
+            {notice.body && renderBody(notice.body)}
+
+            {notice.attachments?.length > 0 && (
+              <div className="mt-6 rounded-2xl border border-basil-100 bg-basil-50 p-4">
+                <h2 className="text-sm font-semibold text-title">첨부파일</h2>
+                <ul className="mt-3 space-y-2">
+                  {notice.attachments.map((file, index) => (
+                    <li key={`${file.name}-${index}`}>
+                      <a
+                        href={file.url}
+                        target="_blank"
+                        rel="noreferrer"
+                        className="flex items-center justify-between rounded-xl border border-basil-100 bg-white px-3 py-2.5 text-sm text-basil-700"
+                      >
+                        <span>{file.name}</span>
+                        <span className="text-xs text-basil-600">열기</span>
+                      </a>
+                    </li>
+                  ))}
+                </ul>
+              </div>
             )}
           </article>
         )}
       </div>
     </div>
   );
+}
+
+function renderBody(body) {
+  const imagePattern = /!\[([^\]]*)\]\((https?:\/\/[^)]+)\)/g;
+  const matches = Array.from(body.matchAll(imagePattern));
+
+  if (matches.length === 0) {
+    return <p className="mt-5 whitespace-pre-wrap break-keep text-[15px] leading-relaxed text-ink">{body}</p>;
+  }
+
+  const parts = [];
+  let lastIndex = 0;
+
+  matches.forEach((match, index) => {
+    const [fullMatch, altText, imageUrl] = match;
+    const startIndex = match.index;
+
+    if (startIndex > lastIndex) {
+      parts.push(
+        <span key={`text-${index}`} className="whitespace-pre-wrap">
+          {body.slice(lastIndex, startIndex)}
+        </span>
+      );
+    }
+
+    parts.push(
+      <img
+        key={`img-${index}`}
+        src={imageUrl}
+        alt={altText || "공지 이미지"}
+        className="my-4 w-full rounded-2xl border border-basil-100 object-cover"
+      />
+    );
+
+    lastIndex = startIndex + fullMatch.length;
+  });
+
+  if (lastIndex < body.length) {
+    parts.push(
+      <span key="text-end" className="whitespace-pre-wrap">
+        {body.slice(lastIndex)}
+      </span>
+    );
+  }
+
+  return <div className="mt-5 space-y-3 break-keep text-[15px] leading-relaxed text-ink">{parts}</div>;
 }
 
 function BackIcon() {
