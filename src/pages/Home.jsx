@@ -67,7 +67,7 @@ export default function Home() {
         <Sparkle className="bottom-[18%] left-[24%]" size={11} color="#FFFFFF" />
 
         <p className="relative text-[11px] font-semibold uppercase tracking-[0.22em] text-basil-600">
-          2026 청년대학부 여름말씀캠프
+          2026 로뎀나무교회 청년대학부 여름말씀캠프
         </p>
 
         <h1
@@ -188,7 +188,7 @@ export default function Home() {
       </section>
 
       <p className="px-6 py-9 text-center text-xs text-ink-faint">
-        로뎀 청년대학부 · 말씀캠프 앱
+        로뎀나무교회 청년대학부 · 말씀캠프 앱
       </p>
     </div>
   );
