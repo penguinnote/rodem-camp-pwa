@@ -1,4 +1,4 @@
-import { NavLink } from "react-router-dom";
+import { NavLink, useNavigate, useLocation } from "react-router-dom";
 
 // Google Photos 공유 앨범 URL
 const PHOTO_ALBUM_URL = "https://photos.app.goo.gl/nZAFegzZbWZtQnx8A";
@@ -11,6 +11,24 @@ const tabs = [
 ];
 
 export default function BottomNav() {
+  const navigate = useNavigate();
+  const location = useLocation();
+
+  // history를 [홈] 또는 [홈, 현재화면]으로만 유지한다.
+  // 홈→탭은 push, 탭→탭은 replace, 탭→홈은 replace로 탭 기록을 쌓지 않는다.
+  function handleTab(e, to) {
+    e.preventDefault();
+    const path = location.pathname;
+    if (to === path) return;
+    if (to === "/") {
+      navigate("/", { replace: true });
+    } else if (path === "/") {
+      navigate(to);
+    } else {
+      navigate(to, { replace: true });
+    }
+  }
+
   return (
     <nav className="shrink-0 border-t border-[#D4E6EC] bg-white/90 backdrop-blur-md">
       <div className="grid grid-cols-5 pb-[env(safe-area-inset-bottom)]">
@@ -19,6 +37,7 @@ export default function BottomNav() {
             key={to}
             to={to}
             end={to === "/"}
+            onClick={(e) => handleTab(e, to)}
             className={({ isActive }) =>
               `flex flex-col items-center gap-1 py-3 text-[11px] transition-colors ${
                 isActive ? "text-basil-600" : "text-[#9BB3BD]"

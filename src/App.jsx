@@ -1,12 +1,12 @@
 import { useEffect, useRef, useState } from "react";
-import { Routes, Route, Navigate, useNavigate } from "react-router-dom";
+import { Routes, Route, Navigate, useNavigate, useLocation } from "react-router-dom";
 import { collection, query, orderBy, limit, onSnapshot } from "firebase/firestore";
 import { db } from "./firebase";
 import BottomNav from "./components/BottomNav.jsx";
 import SplashScreen, { SPLASH_TIMING } from "./components/SplashScreen.jsx";
 import Toast from "./components/Toast.jsx";
 import { setBadgeCount } from "./lib/badge";
-import { useBackNavigation } from "./hooks/useBackNavigation";
+import { goToAnnouncement } from "./lib/nav";
 import Home from "./pages/Home.jsx";
 import Schedule from "./pages/Schedule.jsx";
 import Rooms from "./pages/Rooms.jsx";
@@ -17,9 +17,7 @@ import AnnouncementDetail from "./pages/AnnouncementDetail.jsx";
 
 export default function App() {
   const navigate = useNavigate();
-
-  // 안드로이드 뒤로가기 계층 제어 (popstate 가로채기 + 홈 트랩)
-  useBackNavigation();
+  const location = useLocation();
 
   // 콜드 스타트마다 스플래시 노출 (마운트 시 1회)
   const [splashVisible, setSplashVisible] = useState(true);
@@ -99,7 +97,7 @@ export default function App() {
           onClick={() => {
             const id = toast.id;
             setToast(null);
-            navigate(`/announcements/${id}`);
+            goToAnnouncement(navigate, location.pathname, id);
           }}
           onClose={() => setToast(null)}
         />

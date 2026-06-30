@@ -1,24 +1,24 @@
-import { useState, useEffect, useRef } from "react";
+import { useSearchParams } from "react-router-dom";
 import PageHeader from "../components/PageHeader.jsx";
 import { rooms } from "../data/rooms.js";
-import { registerBackInterceptor } from "../hooks/useBackNavigation";
 
 export default function Rooms() {
-  const [query, setQuery] = useState("");
-  const queryRef = useRef(query);
-  queryRef.current = query;
+  // 검색어를 URL 쿼리에 둔다. 뒤로가기로 쿼리가 사라지면 검색이 해제되고
+  // 방배정 페이지에 그대로 머문다. 검색이 없을 때의 뒤로가기는 홈으로 간다.
+  const [params, setParams] = useSearchParams();
+  const query = params.get("q") ?? "";
 
-  // 뒤로가기 시 검색어가 있으면 먼저 검색을 해제하고 페이지에 머문다.
-  // 검색어가 비어 있으면 인터셉터가 false를 반환해 계층 이동(홈)으로 진행.
-  useEffect(() => {
-    return registerBackInterceptor(() => {
-      if (queryRef.current.trim()) {
-        setQuery("");
-        return true;
-      }
-      return false;
-    });
-  }, []);
+  function onSearchChange(value) {
+    const had = query.trim().length > 0;
+    const has = value.trim().length > 0;
+    if (has && !had) {
+      setParams({ q: value }); // 첫 활성화: history 엔트리 push
+    } else if (has) {
+      setParams({ q: value }, { replace: true }); // 갱신: 엔트리 쌓지 않음
+    } else {
+      setParams({}, { replace: true }); // 해제
+    }
+  }
 
   const filtered = rooms.filter((room) => {
     const q = query.trim();
@@ -37,7 +37,7 @@ export default function Rooms() {
           </span>
           <input
             value={query}
-            onChange={(e) => setQuery(e.target.value)}
+            onChange={(e) => onSearchChange(e.target.value)}
             placeholder="이름 또는 방 번호 검색"
             className="w-full rounded-xl border border-basil-100 bg-basil-50 py-2.5 pl-10 pr-4 text-sm text-ink outline-none transition placeholder:text-ink-faint focus:border-basil-400 focus:bg-white"
           />

@@ -1,11 +1,12 @@
 import { useEffect, useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useLocation } from "react-router-dom";
 import { collection, query, orderBy, limit, onSnapshot } from "firebase/firestore";
 import { db } from "../firebase";
 import { enablePush } from "../lib/push";
 import { formatRelative } from "../lib/time";
 import { truncateTitle } from "../lib/text";
 import { firstImageUrl, firstFile } from "../lib/blocks";
+import { goToAnnouncement } from "../lib/nav";
 
 // 알림 권한이 아직 결정되지 않았을 때만(default) "알림 받기" 버튼을 노출.
 // 미지원 환경에서는 Notification 자체가 없으므로 숨김 처리됨.
@@ -18,6 +19,7 @@ export default function Home() {
   const [pushMsg, setPushMsg] = useState("");
   const [permission, setPermission] = useState(initialPermission);
   const navigate = useNavigate();
+  const location = useLocation();
 
   useEffect(() => {
     const q = query(
@@ -120,7 +122,7 @@ export default function Home() {
                   <button
                     key={notice.id}
                     type="button"
-                    onClick={() => navigate(`/announcements/${notice.id}`)}
+                    onClick={() => goToAnnouncement(navigate, location.pathname, notice.id)}
                     className={`block w-full text-left ${
                       i === 0
                         ? "rounded-3xl border-2 border-basil-500 bg-basil-50 p-6 shadow-sm"
