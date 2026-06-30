@@ -108,6 +108,28 @@ function BlockView({ block }) {
     );
   }
 
+  if (block.type === "link") {
+    return (
+      <a
+        href={block.url}
+        target="_blank"
+        rel="noreferrer"
+        className="flex items-center gap-3 rounded-2xl border border-basil-200 bg-basil-50 p-4"
+      >
+        <span
+          className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full text-white"
+          style={{ background: "#67BDDB" }}
+        >
+          <LinkIcon />
+        </span>
+        <span className="min-w-0 flex-1 truncate font-semibold text-basil-700">
+          {block.label || block.url}
+        </span>
+        <span className="shrink-0 text-basil-600">›</span>
+      </a>
+    );
+  }
+
   if (block.type === "file") {
     return (
       <a
@@ -150,6 +172,24 @@ function PdfIcon() {
     >
       <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
       <path d="M14 2v6h6" />
+    </svg>
+  );
+}
+
+function LinkIcon() {
+  return (
+    <svg
+      width="18"
+      height="18"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.9"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
+      <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71" />
+      <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71" />
     </svg>
   );
 }

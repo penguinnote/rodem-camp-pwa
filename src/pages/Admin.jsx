@@ -1,6 +1,14 @@
 import { useState, useEffect, useRef } from "react";
 import { onAuthStateChanged, signInWithEmailAndPassword, signOut } from "firebase/auth";
-import { addDoc, collection, serverTimestamp } from "firebase/firestore";
+import {
+  collection,
+  doc,
+  getDocs,
+  query,
+  where,
+  writeBatch,
+  serverTimestamp,
+} from "firebase/firestore";
 import { auth, db } from "../firebase";
 import { resizeImage, uploadToStorage } from "../lib/upload";
 
@@ -14,6 +22,7 @@ export default function Admin() {
   const [pw, setPw] = useState("");
   const [title, setTitle] = useState("");
   const [blocks, setBlocks] = useState([emptyText()]);
+  const [isPinned, setIsPinned] = useState(false);
   const [msg, setMsg] = useState("");
   const [sending, setSending] = useState(false);
 
@@ -54,6 +63,10 @@ export default function Admin() {
 
   function addText() {
     setBlocks((prev) => [...prev, emptyText()]);
+  }
+
+  function addLink() {
+    setBlocks((prev) => [...prev, { _id: newId(), type: "link", url: "", label: "" }]);
   }
 
   // 이미지/파일 선택 → 블록 추가(업로드 중) → 업로드 완료 시 url 채움
@@ -105,6 +118,10 @@ export default function Admin() {
           return b.url ? { type: "image", url: b.url, path: b.path } : null;
         if (b.type === "file")
           return b.url ? { type: "file", url: b.url, name: b.name, path: b.path } : null;
+        if (b.type === "link")
+          return b.url?.trim()
+            ? { type: "link", url: b.url.trim(), label: b.label?.trim() || b.url.trim() }
+            : null;
         return null;
       })
       .filter(Boolean);
@@ -119,14 +136,27 @@ export default function Admin() {
 
     setSending(true);
     try {
-      await addDoc(collection(db, "announcements"), {
+      const batch = writeBatch(db);
+      const newRef = doc(collection(db, "announcements"));
+      batch.set(newRef, {
         title: title.trim(),
         body,
         blocks: cleaned,
+        pinned: isPinned,
         createdAt: serverTimestamp(),
       });
+      // 한 번에 하나만 고정: 기존 고정 공지들을 모두 해제
+      if (isPinned) {
+        const prevPinned = await getDocs(
+          query(collection(db, "announcements"), where("pinned", "==", true))
+        );
+        prevPinned.forEach((d) => batch.update(d.ref, { pinned: false }));
+      }
+      await batch.commit();
+
       setTitle("");
       setBlocks([emptyText()]);
+      setIsPinned(false);
       setMsg("공지 발송 완료");
     } catch (err) {
       console.error("send failed", err);
@@ -186,7 +216,7 @@ export default function Admin() {
             block={block}
             isFirst={i === 0}
             isLast={i === blocks.length - 1}
-            onChange={(value) => updateBlock(block._id, { value })}
+            onPatch={(patch) => updateBlock(block._id, patch)}
             onRemove={() => removeBlock(block._id)}
             onMoveUp={() => moveBlock(block._id, -1)}
             onMoveDown={() => moveBlock(block._id, 1)}
@@ -217,6 +247,13 @@ export default function Admin() {
         >
           파일 추가
         </button>
+        <button
+          type="button"
+          onClick={addLink}
+          className="rounded-full border border-basil-200 px-3 py-1.5 text-sm font-medium text-basil-700"
+        >
+          링크 추가
+        </button>
       </div>
       <input
         ref={imageInputRef}
@@ -232,6 +269,16 @@ export default function Admin() {
         className="hidden"
       />
 
+      <label className="flex items-center gap-2.5 rounded-xl border border-basil-100 bg-basil-50 px-4 py-3">
+        <input
+          type="checkbox"
+          checked={isPinned}
+          onChange={(e) => setIsPinned(e.target.checked)}
+          className="h-4 w-4 accent-basil-600"
+        />
+        <span className="text-sm font-medium text-ink">이 공지를 홈에 고정</span>
+      </label>
+
       <button
         disabled={sending}
         className="w-full rounded-xl bg-basil-600 py-2.5 font-semibold text-white disabled:opacity-60"
@@ -243,12 +290,14 @@ export default function Admin() {
   );
 }
 
-function BlockEditor({ block, isFirst, isLast, onChange, onRemove, onMoveUp, onMoveDown }) {
+const BLOCK_LABEL = { text: "텍스트", image: "이미지", file: "파일", link: "링크" };
+
+function BlockEditor({ block, isFirst, isLast, onPatch, onRemove, onMoveUp, onMoveDown }) {
   return (
     <div className="rounded-2xl border border-basil-100 bg-white p-3">
       <div className="mb-2 flex items-center justify-between">
         <span className="text-[11px] font-semibold uppercase tracking-wider text-basil-500">
-          {block.type === "text" ? "텍스트" : block.type === "image" ? "이미지" : "파일"}
+          {BLOCK_LABEL[block.type] ?? block.type}
         </span>
         <div className="flex items-center gap-1">
           <IconBtn label="위로" disabled={isFirst} onClick={onMoveUp}>
@@ -269,8 +318,27 @@ function BlockEditor({ block, isFirst, isLast, onChange, onRemove, onMoveUp, onM
           className="w-full rounded-xl border border-basil-100 bg-basil-50 px-3 py-2 text-[15px]"
           placeholder="내용을 입력하세요."
           value={block.value}
-          onChange={(e) => onChange(e.target.value)}
+          onChange={(e) => onPatch({ value: e.target.value })}
         />
+      )}
+
+      {block.type === "link" && (
+        <div className="space-y-2">
+          <input
+            className="w-full rounded-xl border border-basil-100 bg-basil-50 px-3 py-2 text-sm"
+            placeholder="표시 이름 (예: 말씀 자료 드라이브)"
+            value={block.label}
+            onChange={(e) => onPatch({ label: e.target.value })}
+          />
+          <input
+            type="url"
+            inputMode="url"
+            className="w-full rounded-xl border border-basil-100 bg-basil-50 px-3 py-2 text-sm"
+            placeholder="https://..."
+            value={block.url}
+            onChange={(e) => onPatch({ url: e.target.value })}
+          />
+        </div>
       )}
 
       {block.type === "image" &&

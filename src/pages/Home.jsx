@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
-import { collection, query, orderBy, limit, onSnapshot } from "firebase/firestore";
+import { collection, query, orderBy, limit, where, onSnapshot } from "firebase/firestore";
 import { db } from "../firebase";
 import { enablePush } from "../lib/push";
 import { formatRelative } from "../lib/time";
@@ -15,22 +15,46 @@ function initialPermission() {
 }
 
 export default function Home() {
-  const [notices, setNotices] = useState([]);
+  const [recent, setRecent] = useState([]); // 최신 2개
+  const [pinned, setPinned] = useState(null); // 고정 공지 (없으면 null)
   const [pushMsg, setPushMsg] = useState("");
   const [permission, setPermission] = useState(initialPermission);
   const navigate = useNavigate();
   const location = useLocation();
 
   useEffect(() => {
-    const q = query(
+    const qRecent = query(
       collection(db, "announcements"),
       orderBy("createdAt", "desc"),
       limit(2)
     );
-    return onSnapshot(q, (snap) => {
-      setNotices(snap.docs.map((d) => ({ id: d.id, ...d.data() })));
+    const unsubRecent = onSnapshot(qRecent, (snap) => {
+      setRecent(snap.docs.map((d) => ({ id: d.id, ...d.data() })));
     });
+
+    const qPinned = query(
+      collection(db, "announcements"),
+      where("pinned", "==", true),
+      limit(1)
+    );
+    const unsubPinned = onSnapshot(qPinned, (snap) => {
+      setPinned(snap.empty ? null : { id: snap.docs[0].id, ...snap.docs[0].data() });
+    });
+
+    return () => {
+      unsubRecent();
+      unsubPinned();
+    };
   }, []);
+
+  // 위 카드 = 최신, 아래 카드 = 고정 공지(없으면 두 번째 최신).
+  // 고정이 최신과 같으면 위에 한 번만 표시하고 아래는 그다음 최신으로 중복 방지.
+  const top = recent[0] ?? null;
+  let bottom = null;
+  if (top) {
+    bottom = pinned && pinned.id !== top.id ? pinned : recent[1] ?? null;
+  }
+  const cards = [top, bottom].filter(Boolean);
 
   async function handleEnablePush() {
     setPushMsg("");
@@ -105,7 +129,7 @@ export default function Home() {
 
       {/* 공지 — Firestore 실시간 구독 (홈에서 가장 강조되는 영역) */}
       <section className="px-6">
-        {notices.length > 0 ? (
+        {cards.length > 0 ? (
           <>
             <div className="mb-3 flex items-center justify-between">
               <p className="text-sm font-semibold text-ink">공지</p>
@@ -115,7 +139,7 @@ export default function Home() {
             </div>
 
             <div className="space-y-3">
-              {notices.map((notice, i) => {
+              {cards.map((notice, i) => {
                 const img = firstImageUrl(notice);
                 const file = firstFile(notice);
                 return (
